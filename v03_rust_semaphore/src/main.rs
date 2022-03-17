@@ -4,7 +4,7 @@ use semaphore::Semaphore;
 use std::sync::atomic::{AtomicUsize, Ordering};
 use std::sync::Arc;
 
-const NUM_LOOP: usize = 100000;
+const NUM_LOOP: usize = 10;
 const NUM_THREAD: usize = 8;
 const SEM_NUM: isize = 4;
 
