@@ -6,14 +6,16 @@
 #define NUM_THREADS 10 // 生成するスレッドの数
 
 // スレッド用関数
-void *thread_func(void *arg) { // <2>
+void* thread_func(void *arg) { // <2>
     int id = (int)arg; // <3>
     for (int i = 0; i < 5; i++) { // <4>
         printf("id = %d, i = %d\n", id, i);
-        sleep(1);
+        sleep(id);
     }
 
-    return "finished!"; // 返り値
+    char* buffer = (char*)malloc(sizeof(char) * 255);
+    snprintf(buffer, sizeof(char) * 255, "finished! id = %d", id);
+    return buffer;
 }
 
 int main(int argc, char *argv[]) {
@@ -31,6 +33,7 @@ int main(int argc, char *argv[]) {
         char *ptr;
         if (pthread_join(v[i], (void **)&ptr) == 0) {
             printf("msg = %s\n", ptr);
+            free(ptr);
         } else {
             perror("pthread_join");
             return -1;
