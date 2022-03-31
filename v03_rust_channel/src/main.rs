@@ -3,7 +3,7 @@ pub mod semaphore;
 
 use channel::channel;
 
-const NUM_LOOP: usize = 100000;
+const NUM_LOOP: usize = 10;
 const NUM_THREADS: usize = 8;
 
 fn main() {
