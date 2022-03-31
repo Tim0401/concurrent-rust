@@ -45,6 +45,7 @@ impl BakeryLock {
         let ticket = max + 1;
         write_mem!(&mut self.tickets[idx], Some(ticket));
 
+        // チケットを取得したのでfalse
         fence(Ordering::SeqCst);
         write_mem!(&mut self.entering[idx], false);
         fence(Ordering::SeqCst);
