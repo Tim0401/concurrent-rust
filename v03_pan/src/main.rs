@@ -20,6 +20,14 @@ macro_rules! write_mem {
     };
 }
 
+// fn read_mem<T>(addr: *const T) -> T {
+//     unsafe { read_volatile(addr) }
+// }
+
+// fn write_mem<T>(addr: &mut T, val: T) {
+//     unsafe { write_volatile(addr, val) }
+// }
+
 // パン屋のアルゴリズム用の型
 struct BakeryLock {
     entering: [bool; NUM_THREADS],
@@ -32,6 +40,7 @@ impl BakeryLock {
         // ここからチケット取得処理
         fence(Ordering::SeqCst);
         write_mem!(&mut self.entering[idx], true);
+        //write_mem(&mut self.entering[idx], true);
         fence(Ordering::SeqCst);
 
         // 現在配布されているチケットの最大数を取得
@@ -40,14 +49,19 @@ impl BakeryLock {
             if let Some(t) = read_mem!(&self.tickets[i]) {
                 max = max.max(t)
             }
+            // if let Some(t) = read_mem(&self.tickets[i]) {
+            //     max = max.max(t)
+            // }
         }
         // 最大値+1を自分の番号とする
         let ticket = max + 1;
         write_mem!(&mut self.tickets[idx], Some(ticket));
+        //write_mem(&mut self.tickets[idx], Some(ticket));
 
         // チケットを取得したのでfalse
         fence(Ordering::SeqCst);
         write_mem!(&mut self.entering[idx], false);
+        //write_mem(&mut self.entering[idx], false);
         fence(Ordering::SeqCst);
 
         // ここから待機処理
@@ -58,12 +72,14 @@ impl BakeryLock {
 
             // スレッドiがチケット取得中なら待機
             while read_mem!(&self.entering[i]) {}
+            // while read_mem(&self.entering[i]) {}
 
             loop {
                 // スレッドiと自分の優先順位を比較して
                 // 自分の方が優先順位が高いか、
                 // スレッドiが処理中でない場合に待機を終了
                 match read_mem!(&self.tickets[i]) {
+                    //match read_mem(&self.tickets[i]) {
                     Some(t) => {
                         // スレッドiのチケット番号より
                         // 自分の番号のほうが若いか、
@@ -95,6 +111,9 @@ impl Drop for LockGuard {
     fn drop(&mut self) {
         fence(Ordering::SeqCst);
         write_mem!(&mut LOCK.tickets[self.idx], None);
+        // unsafe {
+        //     write_mem(&mut LOCK.tickets[self.idx], None);
+        // }
     }
 }
 
