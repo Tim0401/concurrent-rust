@@ -1,3 +1,5 @@
+// not for windows
+
 use signal_hook::{iterator::Signals, SIGUSR1}; // <1>
 use std::{error::Error, process, thread, time::Duration};
 
