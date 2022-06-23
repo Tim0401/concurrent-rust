@@ -32,13 +32,13 @@ impl<T> SpinLock<T> {
             while self.lock.load(Ordering::Relaxed) {}
 
             // ロック用共有変数をアトミックに書き込み
-            if let Ok(_) =
-                self.lock
-                    .compare_exchange_weak(
-                        false, // falseなら
-                        true,  // trueを書き込み
-                        Ordering::Acquire, // 成功時のオーダー
-                        Ordering::Relaxed) // 失敗時のオーダー
+            if let Ok(_) = self.lock.compare_exchange_weak(
+                false,             // falseなら
+                true,              // trueを書き込み
+                Ordering::Acquire, // 成功時のオーダー
+                Ordering::Relaxed,
+            )
+            // 失敗時のオーダー
             {
                 break;
             }
