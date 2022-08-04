@@ -44,7 +44,7 @@ impl Future for Hello {
                 Poll::Pending // 再度呼び出し可能
             }
             StateHello::END => {
-                Poll::Ready(1) // 終了
+                Poll::Ready(100) // 終了
             }
         }
     }
@@ -79,12 +79,20 @@ fn main() {
     // 停止と再開の繰り返し <3>
     let a = hello.as_mut().poll(&mut ctx);
     print!("1, {}\n", a.is_ready());
+
     let a = hello.as_mut().poll(&mut ctx);
     print!("2, {}\n", a.is_ready());
+    let num = match a {
+        Poll::Ready(t) => Some(t),
+        Poll::Pending => None,
+    };
+    print!("result2, {:?}\n", num);
+
     let a = hello.as_mut().poll(&mut ctx);
     print!("3, {}\n", a.is_ready());
-
-    let mut b = futures::ready!(a);
-
-    print!("result, {:?}\n", b);
+    let num = match a {
+        Poll::Ready(t) => Some(t),
+        Poll::Pending => None,
+    };
+    print!("result3, {:?}\n", num);
 }
